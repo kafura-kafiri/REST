@@ -1,0 +1,7 @@
+.cloneignore
+# rest/
+# tools/
+clone.py
+doc/
+ve/
+requirements

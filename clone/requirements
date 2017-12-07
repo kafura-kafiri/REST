@@ -1,0 +1,6 @@
+demjson
+pymongo
+flask
+flask-login
+requests
+pillow
