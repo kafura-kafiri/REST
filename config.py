@@ -13,6 +13,11 @@ def configure(app):
     import html
     app.jinja_env.globals.update(unescape=lambda x: html.unescape(x))
 
+    @app.after_request
+    def after_request(response):
+        response.headers.add('Accept-Ranges', 'bytes')
+        return response
+
 
 client = MongoClient('localhost:27017')
 db_name = 'REST'

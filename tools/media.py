@@ -9,7 +9,7 @@ from PIL import Image
 from bson import ObjectId
 import mimetypes
 
-from flask import send_file, Blueprint, request, flash, abort
+from flask import send_file, Blueprint, request, flash, abort, stream_with_context, Response
 blue = Blueprint('media', __name__)
 
 
@@ -107,7 +107,15 @@ def insert_file(path):
     abort(403)
 
 
+@blue.route('/f/-<path:path>')
+def file_on_path(path):
+    path = '/' + path
+    from tools.utility import send_file_partial
+    return send_file_partial(path)
+
+
 @blue.route('/f/<_id>.<_format>')
 def get_file(_id, _format):
     f_stream = fs.get(ObjectId(_id))
-    return send_file(f_stream, mimetype=mimetypes.types_map['.' + _format])
+    from tools.utility import my_send_file_partial
+    return my_send_file_partial(f_stream)

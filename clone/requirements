@@ -5,3 +5,4 @@ flask-login
 requests
 pillow
 virtualenv
+gunicorn
