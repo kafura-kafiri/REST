@@ -1,1 +1,3 @@
 url_prefix = config collection = folder_name = default
+request_json
+type(current_user._id) == ObjectId

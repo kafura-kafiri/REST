@@ -7,6 +7,7 @@ import requests
 from io import BytesIO
 from PIL import Image
 from bson import ObjectId
+import mimetypes
 
 from flask import send_file, Blueprint, request, flash, abort
 blue = Blueprint('media', __name__)
@@ -45,7 +46,7 @@ def insert_img(image_bytes, o, sizes=('b', 't', 'k', 'r', 'v', 'w', 'y', 'l'), m
     return str(o), 200
 
 
-@blue.route('/+', methods=['GET', 'POST'])
+@blue.route('/i/+', methods=['GET', 'POST'])
 def add_image():
     try:
         o = ObjectId()
@@ -65,7 +66,7 @@ def add_image():
 
 @blue.route('/-')
 def minimize_all():
-    from utility import obj2str
+    from tools.utility import obj2str
     from flask import jsonify
     documents = fs.find()
     documents = [{
@@ -84,8 +85,8 @@ def delete_all():
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 
-@blue.route('/<size>/<_id>.<_format>')
-@blue.route('/<size>/<_id>')
+@blue.route('/i/<size>/<_id>.<_format>')
+@blue.route('/i/<size>/<_id>')
 def get_image(_id, size, _format=None):
     try:
         file_name = '{0}_{1}'.format(size, _id)
@@ -94,3 +95,19 @@ def get_image(_id, size, _format=None):
         return serve_pil_image(im)
     except Exception as e:
         abort(400)
+
+
+@blue.route('/f/+<path:path>')
+def insert_file(path):
+    path = '/' + path
+    with open(path, "rb") as file:
+        mime = mimetypes.MimeTypes().guess_type(path)
+        _id = fs.put(file.read(), contentType=mime)
+        return str(_id)
+    abort(403)
+
+
+@blue.route('/f/<_id>.<_format>')
+def get_file(_id, _format):
+    f_stream = fs.get(ObjectId(_id))
+    return send_file(f_stream, mimetype=mimetypes.types_map['.' + _format])

@@ -4,3 +4,4 @@ flask
 flask-login
 requests
 pillow
+virtualenv

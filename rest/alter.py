@@ -9,7 +9,7 @@ import json
 
 def add_alteration(crud):
     @crud.blue.route('/<_id>$', methods=['GET', 'POST'])
-    @crud.blue.route('/<_id>$<operator>', methods=['GET', 'POST'])
+    @crud.blue.route('/<_id>$-<operator>', methods=['GET', 'POST'])
     def alter(_id, operator):
         _id = ObjectId(_id)
         try:

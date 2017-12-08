@@ -1,35 +1,24 @@
-from ast import literal_eval
 from bson import ObjectId
+import demjson
 
-
-def request_json(request, _json=None, specific_type=dict):
-    raw = None
-    if _json:
-        raw = _json
-    elif 'json' in request.values:
-        raw = request.values['json']
-    else:
-        raise Exception
+def request_json(request):
+    '''
+    :param request:
+    :return:
+    '''
+    evaluated = {}
     try:
-        evaluated = literal_eval(raw)
-        if type(evaluated) is dict:
-            for key, value in request.values.items():
-                if 'json.' in key:
-                    key = '.'.join(key.split('.')[1:])
-                    evaluated, key = dot_notation(evaluated, key)
-                    try:
-                        evaluated[key] = literal_eval(value)
-                    except:
-                        evaluated[key] = value
-        print(evaluated)
-        if specific_type and type(evaluated) is specific_type:
-            return evaluated
-        elif not specific_type:
-            return evaluated
-        else:
-            raise Exception
-    except Exception as e:
-        return raw
+        evaluated = demjson.decode(request.values['json'], encoding='utf8')  # may # may not json
+        for key, value in request.values.items():
+            if 'json.' in key:
+                key = '.'.join(key.split('.')[1:])
+                evaluated, key = dot_notation(evaluated, key)
+                try:
+                    evaluated[key] = demjson.decode(value, encoding='utf8')
+                except:
+                    evaluated[key] = value
+    finally:
+        return evaluated
 
 
 def request_attributes(request, **kwargs):

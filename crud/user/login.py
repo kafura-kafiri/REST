@@ -2,7 +2,7 @@ from flask_login import LoginManager, login_required, UserMixin, current_user, l
 from flask import redirect, request, url_for, Blueprint, render_template
 from config import users
 from hashlib import sha256
-from crud.user import skeleton
+from crud.defaults import user as default
 
 
 def setup(app):
@@ -115,7 +115,7 @@ def setup(app):
             'username': username,
             'password': password,
             'email': email,
-            **skeleton,
+            **default,
         }
         users.insert_one(json)
         user = User(json)

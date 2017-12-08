@@ -16,5 +16,8 @@ register_all(app)
 from views import blue as views
 app.register_blueprint(views)
 
+from crud.user.login import setup as manage_login
+manage_login(app)
+
 if __name__ == '__main__':
     app.run(port=5000)
